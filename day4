@@ -1,0 +1,385 @@
+Server [localhost]:
+Database [postgres]:
+Port [5432]:
+Username [postgres]:
+Password for user postgres:
+
+psql (18.7)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# CREATE DATABASE college;
+ERROR:  database "college" already exists
+postgres=# \l
+                                                            List of databases
+   Name    |  Owner   | Encoding | Locale Provider |      Collate       |       Ctype        | Locale | ICU Rules |   Access privileges
+-----------+----------+----------+-----------------+--------------------+--------------------+--------+-----------+-----------------------
+ college   | postgres | UTF8     | libc            | English_India.1252 | English_India.1252 |        |           |
+ postgres  | postgres | UTF8     | libc            | English_India.1252 | English_India.1252 |        |           |
+ student   | postgres | UTF8     | libc            | English_India.1252 | English_India.1252 |        |           |
+ template0 | postgres | UTF8     | libc            | English_India.1252 | English_India.1252 |        |           | =c/postgres          +
+           |          |          |                 |                    |                    |        |           | postgres=CTc/postgres
+ template1 | postgres | UTF8     | libc            | English_India.1252 | English_India.1252 |        |           | =c/postgres          +
+           |          |          |                 |                    |                    |        |           | postgres=CTc/postgres
+(5 rows)
+
+
+postgres=# \c college
+You are now connected to database "college" as user "postgres".
+college=# CREATE TABLE Student(
+college(# id SERIAL PRIMARY KEY,
+college(# name VARCHAR(100),
+college(# age INT,
+college(# course VARCHAR(50),
+college(# marks INT );
+CREATE TABLE
+college=# \dt
+            List of tables
+ Schema |   Name   | Type  |  Owner
+--------+----------+-------+----------
+ public | student  | table | postgres
+ public | students | table | postgres
+(2 rows)
+
+
+college=# INSERT INTO Students(name,age,course,marks)
+college-# VALUES
+college-# ('Shree',20,'cse',89),
+college-# ('thanu',20,'cse',90),
+college-# ('siya',20,'cse',99),
+college-# ('daivik',20,'cse',98);
+INSERT 0 4
+college=# SELECT * FROM Students;
+ id |  name  | age | course | marks
+----+--------+-----+--------+-------
+  1 | Shree  |  20 | cse    |    89
+  2 | thanu  |  20 | cse    |    90
+  3 | siya   |  20 | cse    |    99
+  4 | daivik |  20 | cse    |    98
+(4 rows)
+
+
+college=#  SELECT * FROM Students
+college-# WHERE marks>80;
+ id |  name  | age | course | marks
+----+--------+-----+--------+-------
+  1 | Shree  |  20 | cse    |    89
+  2 | thanu  |  20 | cse    |    90
+  3 | siya   |  20 | cse    |    99
+  4 | daivik |  20 | cse    |    98
+(4 rows)
+
+
+college=#  SELECT * FROM Students
+college-# ORDER BY marks DESC;
+ id |  name  | age | course | marks
+----+--------+-----+--------+-------
+  3 | siya   |  20 | cse    |    99
+  4 | daivik |  20 | cse    |    98
+  2 | thanu  |  20 | cse    |    90
+  1 | Shree  |  20 | cse    |    89
+(4 rows)
+
+
+college=#  SELECT * FROM Students
+college-# ORDER BY marks ASC;
+ id |  name  | age | course | marks
+----+--------+-----+--------+-------
+  1 | Shree  |  20 | cse    |    89
+  2 | thanu  |  20 | cse    |    90
+  4 | daivik |  20 | cse    |    98
+  3 | siya   |  20 | cse    |    99
+(4 rows)
+
+
+college=# UPDATE Students
+college-# SET marks=92
+college-# WHERE id=1;
+UPDATE 1
+college=# SELECT * FROM Students;
+ id |  name  | age | course | marks
+----+--------+-----+--------+-------
+  2 | thanu  |  20 | cse    |    90
+  3 | siya   |  20 | cse    |    99
+  4 | daivik |  20 | cse    |    98
+  1 | Shree  |  20 | cse    |    92
+(4 rows)
+
+
+college=# UPDATE Students
+college-# SET marks=33
+college-# WHERE id=2 AND 3;
+ERROR:  argument of AND must be type boolean, not type integer
+LINE 3: WHERE id=2 AND 3;
+                       ^
+college=#
+college=# UPDATE Students
+college-# SET marks=33
+college-# WHERE id=2,
+college-# WHERE id=3;
+ERROR:  syntax error at or near ","
+LINE 3: WHERE id=2,
+                  ^
+college=# UPDATE Students
+college-# SET marks=33
+college-# WHERE id IN(2,3,4);
+UPDATE 3
+college=# SELECT * FROM Students;
+ id |  name  | age | course | marks
+----+--------+-----+--------+-------
+  1 | Shree  |  20 | cse    |    92
+  2 | thanu  |  20 | cse    |    33
+  3 | siya   |  20 | cse    |    33
+  4 | daivik |  20 | cse    |    33
+(4 rows)
+
+
+college=# UPDATE Students
+college-# SET marks=CASE
+college-# WHEN id=1 THEN 92
+college-# WHEN id=2 THEN 88
+college-# WHEN id=3 THEN 87
+college-# END
+college-# WHERE id IN (1,2,3);
+UPDATE 3
+college=# SELECT * FROM Students;
+ id |  name  | age | course | marks
+----+--------+-----+--------+-------
+  4 | daivik |  20 | cse    |    33
+  1 | Shree  |  20 | cse    |    92
+  2 | thanu  |  20 | cse    |    88
+  3 | siya   |  20 | cse    |    87
+(4 rows)
+
+
+college=# UPDATE Students
+college-# SET marks=marks + 5;
+UPDATE 4
+college=# SELECT * FROM Students;
+ id |  name  | age | course | marks
+----+--------+-----+--------+-------
+  4 | daivik |  20 | cse    |    38
+  1 | Shree  |  20 | cse    |    97
+  2 | thanu  |  20 | cse    |    93
+  3 | siya   |  20 | cse    |    92
+(4 rows)
+
+
+college=# DELETE FROM Students
+college-# WHERE id = 4;
+DELETE 1
+college=# SELECT * FROM Students;
+ id | name  | age | course | marks
+----+-------+-----+--------+-------
+  1 | Shree |  20 | cse    |    97
+  2 | thanu |  20 | cse    |    93
+  3 | siya  |  20 | cse    |    92
+(3 rows)
+
+
+college=# select * from Students
+college-# limit 2;
+ id | name  | age | course | marks
+----+-------+-----+--------+-------
+  1 | Shree |  20 | cse    |    97
+  2 | thanu |  20 | cse    |    93
+(2 rows)
+
+
+college=# select * from Students
+college-# ORDER BY marks DESC
+college-# limit 2;
+ id | name  | age | course | marks
+----+-------+-----+--------+-------
+  1 | Shree |  20 | cse    |    97
+  2 | thanu |  20 | cse    |    93
+(2 rows)
+
+
+college=# select count(*)
+college-# from Students;
+ count
+-------
+     3
+(1 row)
+
+
+college=# select count(*)
+college-# from Students
+college-# WHERE course=cse;
+ERROR:  column "cse" does not exist
+LINE 3: WHERE course=cse;
+                     ^
+college=# select count(*)
+college-# from Students
+college-# WHERE course='cse';
+ count
+-------
+     3
+(1 row)
+
+
+college=# SELECT course,Count(*)
+college-# from Students
+college-# group by course;
+ course | count
+--------+-------
+ cse    |     3
+(1 row)
+
+
+college=# select course,max(marks)
+college-# from Students
+college-# group by course;
+ course | max
+--------+-----
+ cse    |  97
+(1 row)
+
+
+college=# CREATE TABLE Student_card(
+college(# card_id serial primary key,
+college(# card_number varchar(50),
+college(# id int unique reference Students(id)
+college(# );
+ERROR:  syntax error at or near "reference"
+LINE 4: id int unique reference Students(id)
+                      ^
+college=# CREATE TABLE Student_card(
+college(# card_id serial primary key,
+college(# card_number varchar(50),
+college(# id int unique references Students(id)
+college(# );
+CREATE TABLE
+college=# insert into Student_card(card_id,card_number)
+college-# values
+college-# ;
+ERROR:  syntax error at or near ";"
+LINE 3: ;
+        ^
+college=# insert into Student_card(card_number,id)
+college-# values
+college-# ('1GD24CS141',1),
+college-# ('1GD24CS157',2),
+college-# (1GD24CS111',3),
+college'# ('1GD24CS222',4)
+college'# ;
+college'# SELECT * FROM Student_card;
+college'#
+college'# insert into Student_card(card_number,id)
+college'# values
+college'# ('1GD24CS141',1),
+college'# ('1GD24CS157',2),
+college'# ('1GD24CS111',3),
+college'# ('1GD24CS222',4);
+college'# '
+college(# select * from Student_card;
+college(# insert into Student_card(card_number,id)
+college(# values
+college(# ('1GD24CS141',1),
+college(# ('1GD24CS157',2),
+college(# ('1GD24CS111',3),
+college(# ('1GD24CS131',4)
+college(# ;
+college(# )
+college-# select * from Student_card;
+ERROR:  trailing junk after numeric literal at or near "1GD24CS111"
+LINE 5: (1GD24CS111',3),
+         ^
+college=# insert into Student_card(card_number,id)
+college-# ('1GD24CS141',1),
+college-# ;
+ERROR:  syntax error at or near "'1GD24CS141'"
+LINE 2: ('1GD24CS141',1),
+         ^
+college=# insert into Student_card(card_number,id)
+college-# values
+college-# ('1GD24CS141',1),
+college-# ('1GD24CS157',2),
+college-# ('1GD24CS111',3),
+college-# ('1GD24CS131',4)
+college-# ;
+ERROR:  insert or update on table "student_card" violates foreign key constraint "student_card_id_fkey"
+DETAIL:  Key (id)=(4) is not present in table "students".
+college=# insert into student_card(card_number,id)
+college-# values
+college-# ('1GD24CS141',1),
+college-# ('1GD24CS157',2),
+college-# ('1GD24CS111',3),
+college-# ('1GD24CS131',4);
+ERROR:  insert or update on table "student_card" violates foreign key constraint "student_card_id_fkey"
+DETAIL:  Key (id)=(4) is not present in table "students".
+college=# INSERT INTO student_card(card_number,id)
+college-# VALUES
+college-# ('1GD24CS141',1),
+college-# ('1GD24CS157',2),
+college-# ('1GD24CS111',3),
+college-# ('1GD24CS131',4);
+ERROR:  insert or update on table "student_card" violates foreign key constraint "student_card_id_fkey"
+DETAIL:  Key (id)=(4) is not present in table "students".
+college=# CREATE TABLE Student_card(
+college(# card_id serial primary key,
+college(# card_number varchar(50),
+college(# id int unique references Studennt(id)
+college(# );
+ERROR:  relation "student_card" already exists
+college=# DROP TABLE Student_card;
+DROP TABLE
+college=# create table departments(
+college(# department_id serial primary key,
+college(# department_name varchar(100));
+CREATE TABLE
+college=# insert into departments(department_name)
+college-# values
+college-# ('cse')
+college-# ('mech')
+college-# ('aiml');
+ERROR:  syntax error at or near "("
+LINE 4: ('mech')
+        ^
+college=# insert into departments(department_name)
+college-# values
+college-# ('cse'),
+college-# ('mech'),
+college-# ('aiml'),
+college-# ('isc'),
+college-# ('dsc');
+INSERT 0 5
+college=# select * from departments;
+ department_id | department_name
+---------------+-----------------
+             1 | cse
+             2 | mech
+             3 | aiml
+             4 | isc
+             5 | dsc
+(5 rows)
+
+
+college=# create table new(
+college(# employee_id serial primary key,
+college(# employee_name varchar(100),
+college(# salary int,
+college(# department_id int references departments(department_id)
+college(# );
+CREATE TABLE
+college=# insert into new(employee_name,salary,department_id)
+college-# values
+college-# ('shree',40000,2),
+college-# ('emin',50000,2),
+college-# ('ilsu',44000,3),
+college-# ('alyna',55000,4);
+INSERT 0 4
+college=# select * from new;
+ employee_id | employee_name | salary | department_id
+-------------+---------------+--------+---------------
+           1 | shree         |  40000 |             2
+           2 | emin          |  50000 |             2
+           3 | ilsu          |  44000 |             3
+           4 | alyna         |  55000 |             4
+(4 rows)
+
+
+college=#
